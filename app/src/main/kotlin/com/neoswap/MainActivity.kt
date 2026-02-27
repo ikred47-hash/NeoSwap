@@ -45,9 +45,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize Official OpenCV
-        OpenCVLoader.initDebug()
-
+        // Inside onCreate
+OpenCVLoader.initDebug() // Use initDebug for this library version
         imgSource = findViewById(R.id.imgSource)
         imgTarget = findViewById(R.id.imgTarget)
         btnClearSource = findViewById(R.id.btnClearSource)
