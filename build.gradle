@@ -1,4 +1,3 @@
-// Top-level build file
 buildscript {
     repositories {
         google()
@@ -14,13 +13,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-    }
-
-    // This block forces the resolution of the engine version early
-    configurations.all {
-        resolutionStrategy {
-            force 'org.opencv:opencv:4.10.0'
-        }
     }
 }
 
