@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         // Inside onCreate
 OpenCVLoader.initDebug() // Use initDebug for this library version
+
         imgSource = findViewById(R.id.imgSource)
         imgTarget = findViewById(R.id.imgTarget)
         btnClearSource = findViewById(R.id.btnClearSource)
