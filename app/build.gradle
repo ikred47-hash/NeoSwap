@@ -29,12 +29,6 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
-    
-    // This tells the build to ignore the specific resource conflict
-    // that is likely causing the 'processDebugResources' failure
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 dependencies {
@@ -42,7 +36,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     
-    // Engine libraries loaded via specific versions
-    implementation ('com.google.android.gms:play-services-mlkit-face-detection:17.1.0')
-    implementation ('com.quickbirdstudios:opencv:4.5.3.0')
+    implementation 'com.google.android.gms:play-services-mlkit-face-detection:17.1.0'
+    implementation 'com.quickbirdstudios:opencv:4.5.3.0'
 }
