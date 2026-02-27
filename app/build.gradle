@@ -42,7 +42,12 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     
-    // Stable Engine entries
+    // Core Logic
     implementation 'com.google.android.gms:play-services-mlkit-face-detection:17.1.0'
-    implementation 'org.opencv:opencv:4.10.0'
+    
+    // THE FIX: We use a specific version and force it into the implementation 
+    // without using any custom configurations that Gradle can 'observe'.
+    implementation('org.opencv:opencv:4.10.0') {
+        transitive = false
+    }
 }
