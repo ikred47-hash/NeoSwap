@@ -14,12 +14,5 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-    }
-    
-    // This forces Gradle to wait until the project is evaluated 
-    // before resolving libraries, fixing the "mutation" error.
-    configurations.all {
-        resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
+   
 }
