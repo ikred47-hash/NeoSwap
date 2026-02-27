@@ -2,7 +2,10 @@ package com.neoswap
 
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
@@ -10,17 +13,19 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    // Registers the photo picker for the Source face
+    private lateinit var imgSource: ImageView
+    private lateinit var imgTarget: ImageView
+    private lateinit var progressBar: ProgressBar
+
     private val pickSourceMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
-            Toast.makeText(this, "Source Selected: $uri", Toast.LENGTH_SHORT).show()
+            imgSource.setImageURI(uri)
         }
     }
 
-    // Registers the photo picker for the Target image
     private val pickTargetMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
-            Toast.makeText(this, "Target Selected: $uri", Toast.LENGTH_SHORT).show()
+            imgTarget.setImageURI(uri)
         }
     }
 
@@ -28,12 +33,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        imgSource = findViewById(R.id.imgSource)
+        imgTarget = findViewById(R.id.imgTarget)
+        progressBar = findViewById(R.id.progressBar)
+        
         val btnSource = findViewById<Button>(R.id.btnSource)
         val btnTarget = findViewById<Button>(R.id.btnTarget)
         val btnSwap = findViewById<Button>(R.id.btnSwap)
 
         btnSource.setOnClickListener {
-            // Launches picker for images only
             pickSourceMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
         }
 
@@ -42,7 +50,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnSwap.setOnClickListener {
-            Toast.makeText(this, "Swap Logic Coming Soon!", Toast.LENGTH_LONG).show()
+            progressBar.visibility = View.VISIBLE
+            Toast.makeText(this, "Processing Swap...", Toast.LENGTH_SHORT).show()
+            // Next step will be adding the C++ engine here
         }
     }
 }
