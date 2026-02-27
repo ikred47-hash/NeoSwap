@@ -3,11 +3,6 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-[span_0](start_span)[span_1](start_span)// Custom configuration to bypass the "Mutation" lock[span_0](end_span)[span_1](end_span)
-configurations {
-    engine
-}
-
 android {
     namespace 'com.neoswap'
     compileSdk 34
@@ -47,10 +42,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     
-    // Core Logic
+    // Core Engine Logic
     implementation 'com.google.android.gms:play-services-mlkit-face-detection:17.1.0'
-    
-    [span_2](start_span)// The Engine: Moved to custom configuration to stop the "Cannot mutate" error[span_2](end_span)
-    engine 'org.opencv:opencv:4.10.0'
-    implementation configurations.engine
+    implementation 'org.opencv:opencv:4.10.0'
 }
