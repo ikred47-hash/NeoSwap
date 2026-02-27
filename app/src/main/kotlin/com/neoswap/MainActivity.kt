@@ -1,5 +1,7 @@
 package com.neoswap
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -7,6 +9,13 @@ import android.widget.*
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.appcompat.app.AppCompatActivity
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
+import org.opencv.android.OpenCVLoader
+import org.opencv.android.Utils
+import org.opencv.core.*
+import org.opencv.photo.Photo
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,14 +30,14 @@ class MainActivity : AppCompatActivity() {
     private val pickSourceMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
             imgSource.setImageURI(uri)
-            btnClearSource.visibility = View.VISIBLE // Show 'X' when photo is added
+            btnClearSource.visibility = View.VISIBLE
         }
     }
 
     private val pickTargetMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
             imgTarget.setImageURI(uri)
-            btnClearTarget.visibility = View.VISIBLE // Show 'X' when photo is added
+            btnClearTarget.visibility = View.VISIBLE
         }
     }
 
@@ -36,7 +45,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize all the new UI elements
+        // Start the Engine
+        OpenCVLoader.initDebug()
+
         imgSource = findViewById(R.id.imgSource)
         imgTarget = findViewById(R.id.imgTarget)
         btnClearSource = findViewById(R.id.btnClearSource)
@@ -45,7 +56,6 @@ class MainActivity : AppCompatActivity() {
         btnStop = findViewById(R.id.btnStop)
         btnSwap = findViewById(R.id.btnSwap)
 
-        // Select Photo Buttons
         findViewById<Button>(R.id.btnSource).setOnClickListener {
             pickSourceMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
         }
@@ -53,7 +63,6 @@ class MainActivity : AppCompatActivity() {
             pickTargetMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
         }
 
-        // 'X' Clear Buttons - Resets only one photo
         btnClearSource.setOnClickListener {
             imgSource.setImageDrawable(null)
             btnClearSource.visibility = View.GONE
@@ -63,29 +72,57 @@ class MainActivity : AppCompatActivity() {
             btnClearTarget.visibility = View.GONE
         }
 
-        // Full Screen Toggle - Tap the image to zoom in/out
-        imgSource.setOnClickListener { toggleZoom(imgSource) }
-        imgTarget.setOnClickListener { toggleZoom(imgTarget) }
-
-        // Swap Action - Shows progress and stop button
         btnSwap.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
-            btnStop.visibility = View.VISIBLE
-            Toast.makeText(this, "Processing...", Toast.LENGTH_SHORT).show()
+            if (imgSource.drawable == null || imgTarget.drawable == null) {
+                Toast.makeText(this, "Select both photos first!", Toast.LENGTH_SHORT).show()
+            } else {
+                runFaceSwap()
+            }
         }
 
-        // Stop Action - Cancels the visual progress
         btnStop.setOnClickListener {
             progressBar.visibility = View.GONE
             btnStop.visibility = View.GONE
         }
     }
 
-    private fun toggleZoom(view: ImageView) {
-        if (view.scaleType == ImageView.ScaleType.CENTER_CROP) {
-            view.scaleType = ImageView.ScaleType.FIT_CENTER
-        } else {
-            view.scaleType = ImageView.ScaleType.CENTER_CROP
+    private fun runFaceSwap() {
+        progressBar.visibility = View.VISIBLE
+        btnStop.visibility = View.VISIBLE
+
+        val srcBmp = (imgSource.drawable as BitmapDrawable).bitmap
+        val dstBmp = (imgTarget.drawable as BitmapDrawable).bitmap
+
+        val detector = FaceDetection.getClient(FaceDetectorOptions.Builder()
+            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE).build())
+
+        // Find face in target
+        detector.process(InputImage.fromBitmap(dstBmp, 0)).addOnSuccessListener { faces ->
+            if (faces.isEmpty()) {
+                progressBar.visibility = View.GONE
+                Toast.makeText(this, "No face found in Target!", Toast.LENGTH_SHORT).show()
+                return@addOnSuccessListener
+            }
+
+            val face = faces[0].boundingBox
+            val srcMat = Mat(); val dstMat = Mat()
+            Utils.bitmapToMat(srcBmp, srcMat)
+            Utils.bitmapToMat(dstBmp, dstMat)
+
+            // Calculate center point for the blend
+            val center = Point(face.centerX().toDouble(), face.centerY().toDouble())
+            val resultMat = Mat()
+            
+            // Perform high-speed seamless blending
+            Photo.seamlessClone(srcMat, dstMat, Mat(), center, resultMat, Photo.NORMAL_CLONE)
+
+            val outBmp = Bitmap.createBitmap(resultMat.cols(), resultMat.rows(), Bitmap.Config.ARGB_8888)
+            Utils.matToBitmap(resultMat, outBmp)
+            
+            imgTarget.setImageBitmap(outBmp)
+            progressBar.visibility = View.GONE
+            btnStop.visibility = View.GONE
+            Toast.makeText(this, "Success!", Toast.LENGTH_SHORT).show()
         }
     }
 }
