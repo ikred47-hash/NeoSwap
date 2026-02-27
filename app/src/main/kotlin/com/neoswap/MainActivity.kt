@@ -45,8 +45,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Start the Engine
-        OpenCVLoader.initDebug()
+        // Initialize Official OpenCV
+        OpenCVLoader.initLocal()
 
         imgSource = findViewById(R.id.imgSource)
         imgTarget = findViewById(R.id.imgTarget)
@@ -96,7 +96,6 @@ class MainActivity : AppCompatActivity() {
         val detector = FaceDetection.getClient(FaceDetectorOptions.Builder()
             .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE).build())
 
-        // Find face in target
         detector.process(InputImage.fromBitmap(dstBmp, 0)).addOnSuccessListener { faces ->
             if (faces.isEmpty()) {
                 progressBar.visibility = View.GONE
@@ -109,11 +108,10 @@ class MainActivity : AppCompatActivity() {
             Utils.bitmapToMat(srcBmp, srcMat)
             Utils.bitmapToMat(dstBmp, dstMat)
 
-            // Calculate center point for the blend
             val center = Point(face.centerX().toDouble(), face.centerY().toDouble())
             val resultMat = Mat()
             
-            // Perform high-speed seamless blending
+            // Seamless blending logic
             Photo.seamlessClone(srcMat, dstMat, Mat(), center, resultMat, Photo.NORMAL_CLONE)
 
             val outBmp = Bitmap.createBitmap(resultMat.cols(), resultMat.rows(), Bitmap.Config.ARGB_8888)
