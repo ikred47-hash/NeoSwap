@@ -36,6 +36,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     
+    // The Engine: Official and stable versions
     implementation 'com.google.android.gms:play-services-mlkit-face-detection:17.1.0'
-    implementation 'com.quickbirdstudios:opencv:4.5.3.0'
+    implementation 'org.opencv:opencv-android:4.10.0'
 }
