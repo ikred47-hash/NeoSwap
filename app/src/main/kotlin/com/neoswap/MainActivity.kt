@@ -45,8 +45,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Inside onCreate
-OpenCVLoader.initDebug() // Use initDebug for this library version
+        // Initialize Official OpenCV engine
+        OpenCVLoader.initDebug()
 
         imgSource = findViewById(R.id.imgSource)
         imgTarget = findViewById(R.id.imgTarget)
@@ -111,7 +111,7 @@ OpenCVLoader.initDebug() // Use initDebug for this library version
             val center = Point(face.centerX().toDouble(), face.centerY().toDouble())
             val resultMat = Mat()
             
-            // Seamless blending logic
+            // Core Face-Swap Blend
             Photo.seamlessClone(srcMat, dstMat, Mat(), center, resultMat, Photo.NORMAL_CLONE)
 
             val outBmp = Bitmap.createBitmap(resultMat.cols(), resultMat.rows(), Bitmap.Config.ARGB_8888)
