@@ -3,9 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-// Custom configuration to bypass the "Mutation" lock
+// Correctly define custom configuration for the engine
 configurations {
     engine
+    implementation.extendsFrom(engine)
 }
 
 android {
@@ -47,10 +48,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     
-    // Core Face Detection Logic
+    // Core Logic
     implementation 'com.google.android.gms:play-services-mlkit-face-detection:17.1.0'
     
-    // The Engine: Isolated to stop the "Cannot mutate" error
+    // The Engine: Correct syntax for Gradle 8.0+
     engine 'org.opencv:opencv:4.10.0'
-    implementation configurations.engine
 }
