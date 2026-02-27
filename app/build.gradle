@@ -30,6 +30,7 @@ android {
         jvmTarget = '17'
     }
 
+    // This ensures OpenCV's internal resources don't conflict with your app
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
@@ -42,7 +43,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     
-    // The Engine: Official and highly stable version
+    // Stable Engine: Pre-indexed version to bypass mutation errors
     implementation 'com.google.android.gms:play-services-mlkit-face-detection:17.1.0'
-    implementation 'org.opencv:opencv:4.10.0'
+    implementation 'org.opencv:opencv:4.9.0'
 }
